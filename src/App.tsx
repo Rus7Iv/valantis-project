@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import md5 from 'md5';
 
-interface Product {
+interface IProduct {
   id: string;
   product: string;
   price: number;
@@ -10,7 +10,7 @@ interface Product {
 }
 
 const App = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<IProduct[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const password = 'Valantis';
@@ -34,9 +34,16 @@ const App = () => {
         }, {
           headers: { 'X-Auth': auth }
         });
-        setProducts(productResponse.data.result);
-      } catch (error) {
-        console.error(error);
+        const uniqueProducts = Array.from(new Map(productResponse.data.result.map((item: IProduct) => [item.id, item])).values()) as IProduct[];
+        setProducts(uniqueProducts);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          console.error(error);
+          if (error.response && error.response.data && error.response.data.error) {
+            console.error(`Error ID: ${error.response.data.error}`);
+          }
+        }
+        fetchProducts();
       } finally {
         setLoading(false);
       }
