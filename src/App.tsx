@@ -53,6 +53,7 @@ const App = () => {
         products.map(product => (
           <div key={product.id}>
             <h2>{product.product}</h2>
+            <p>{product.id}</p>
             <p>{product.price}</p>
             <p>{product.brand}</p>
           </div>
