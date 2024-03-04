@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import md5 from 'md5';
+import './App.css'
 
 interface IProduct {
   id: string;
   product: string;
-  price: number;
-  brand: string | null;
+  price?: number;
+  brand?: string | null;
 }
 
 const App = () => {
@@ -57,14 +58,26 @@ const App = () => {
       {loading ? (
         <div>Loading...</div>
       ) : (
-        products.map(product => (
-          <div key={product.id}>
-            <h2>{product.product}</h2>
-            <p>{product.id}</p>
-            <p>{product.price}</p>
-            <p>{product.brand}</p>
-          </div>
-        ))
+        <table className="product-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Product</th>
+              <th>Brand</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map(product => (
+              <tr key={product.id}>
+                <td>{product.id || '-'}</td>
+                <td>{product.product || '-'}</td>
+                <td>{product.brand || '-'}</td>
+                <td>{product.price !== undefined ? product.price : '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
       <button onClick={() => setPage(page - 1)} disabled={page === 0} style={{marginRight: '50px'}}>
         Previous Page
