@@ -14,7 +14,6 @@ const App = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState({ product: '', price: '', brand: '' });
   const password = 'Valantis';
   const timestamp = new Date().toISOString().slice(0,10).replace(/-/g,"");
   const auth = md5(`${password}_${timestamp}`);
@@ -32,7 +31,7 @@ const App = () => {
         const ids = response.data.result;
         const productResponse = await axios.post('http://api.valantis.store:40000/', {
           action: 'get_items',
-          params: { ids, ...filter }
+          params: { ids }
         }, {
           headers: { 'X-Auth': auth }
         });
@@ -52,19 +51,10 @@ const App = () => {
     };
 
     fetchProducts();
-  }, [page, auth, filter]);
-
-  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter({ ...filter, [event.target.name]: event.target.value });
-  };
+  }, [page, auth]);
 
   return (
     <div>
-      <div>
-        <input type="text" name="product" value={filter.product} onChange={handleFilterChange} placeholder="Filter by product name" />
-        <input type="text" name="price" value={filter.price} onChange={handleFilterChange} placeholder="Filter by price" />
-        <input type="text" name="brand" value={filter.brand} onChange={handleFilterChange} placeholder="Filter by brand" />
-      </div>
       {loading ? (
         <div>Loading...</div>
       ) : (
