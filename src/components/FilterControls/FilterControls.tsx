@@ -8,7 +8,12 @@ const FilterControls  = ({ onFilter }: IFilterControlsProps) => {
   const [filterBrand, setFilterBrand] = useState<string | null>(null);
 
   const handleFilter = () => {
-    onFilter(filterProduct, filterPrice, filterBrand);
+    const filters = {
+      ...(filterProduct && { product: filterProduct }),
+      ...(filterPrice && { price: filterPrice }),
+      ...(filterBrand && { brand: filterBrand }),
+    };
+    onFilter(filters);
   };
 
   return (

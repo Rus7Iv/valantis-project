@@ -46,16 +46,12 @@ const useProducts = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  const handleFilter = async (product: string | null, price: number | null, brand: string | null) => {
+  const handleFilter = async (filters: { product?: string | null, price?: number | null, brand?: string | null }) => {
     setLoading(true);
     try {
       const response = await axios.post('http://api.valantis.store:40000/', {
         action: 'filter',
-        params: { 
-          product: product, 
-          price: price, 
-          brand: brand 
-        }
+        params: filters
       }, {
         headers: { 'X-Auth': auth }
       });
