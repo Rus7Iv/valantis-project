@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import md5 from 'md5';
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import md5 from 'md5'
+import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner'
 import './App.css'
 
 interface IProduct {
@@ -92,13 +93,26 @@ const App = () => {
   };
 
   return (
-    <div>
-      <input type="text" placeholder="Product" onChange={e => setFilterProduct(e.target.value)} />
-      <input type="text" placeholder="Brand" onChange={e => setFilterBrand(e.target.value)} />
-      <input type="number" placeholder="Price" onChange={e => setFilterPrice(Number(e.target.value))} />
-      <button onClick={handleFilter}>Filter</button>
+    <>
+      <div className='control-container'>
+        <div className='control-container__filter'>
+          <input type="text" placeholder="Product" onChange={e => setFilterProduct(e.target.value)} />
+          <input type="text" placeholder="Brand" onChange={e => setFilterBrand(e.target.value)} />
+          <input type="number" placeholder="Price" onChange={e => setFilterPrice(Number(e.target.value))} />
+          <button onClick={handleFilter}>Filter</button>
+        </div>
+        <div className='control-container__pages'>
+          <button onClick={() => setPage(page - 1)} disabled={page === 0}>
+            Previous Page
+          </button>
+          <button onClick={() => setPage(page + 1)}>
+            Next Page
+          </button>
+        </div>
+      </div>
+
       {loading ? (
-        <div>Loading...</div>
+        <LoadingSpinner />
       ) : (
         <table className="product-table">
           <thead>
@@ -121,13 +135,7 @@ const App = () => {
           </tbody>
         </table>
       )}
-      <button onClick={() => setPage(page - 1)} disabled={page === 0} style={{marginRight: '50px'}}>
-        Previous Page
-      </button>
-      <button onClick={() => setPage(page + 1)}>
-        Next Page
-      </button>
-    </div>
+    </>
   );
 };
 
