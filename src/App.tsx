@@ -18,6 +18,10 @@ const App = () => {
   const timestamp = new Date().toISOString().slice(0,10).replace(/-/g,"");
   const auth = md5(`${password}_${timestamp}`);
 
+  const [filterProduct, setFilterProduct] = useState<string | null>(null);
+  const [filterPrice, setFilterPrice] = useState<number | null>(null);
+  const [filterBrand, setFilterBrand] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -53,8 +57,46 @@ const App = () => {
     fetchProducts();
   }, [page, auth]);
 
+  const handleFilter = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post('http://api.valantis.store:40000/', {
+        action: 'filter',
+        params: { 
+          product: filterProduct, 
+          price: filterPrice, 
+          brand: filterBrand 
+        }
+      }, {
+        headers: { 'X-Auth': auth }
+      });
+      const ids = response.data.result;
+      const productResponse = await axios.post('http://api.valantis.store:40000/', {
+        action: 'get_items',
+        params: { ids }
+      }, {
+        headers: { 'X-Auth': auth }
+      });
+      const uniqueProducts = Array.from(new Map(productResponse.data.result.map((item: IProduct) => [item.id, item])).values()) as IProduct[];
+      setProducts(uniqueProducts);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error(error);
+        if (error.response && error.response.data && error.response.data.error) {
+          console.error(`Error ID: ${error.response.data.error}`);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
+      <input type="text" placeholder="Product" onChange={e => setFilterProduct(e.target.value)} />
+      <input type="text" placeholder="Brand" onChange={e => setFilterBrand(e.target.value)} />
+      <input type="number" placeholder="Price" onChange={e => setFilterPrice(Number(e.target.value))} />
+      <button onClick={handleFilter}>Filter</button>
       {loading ? (
         <div>Loading...</div>
       ) : (
